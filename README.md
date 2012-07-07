@@ -1,4 +1,4 @@
-# PinboardApi [![Build Status](https://secure.travis-ci.org/phlipper/pinboard_api.png?branch=master)](http://travis-ci.org/phlipper/pinboard_api)
+# PinboardApi [![Build Status](https://secure.travis-ci.org/phlipper/pinboard_api.png?branch=master)](http://travis-ci.org/phlipper/pinboard_api) [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/phlipper/pinboard_api)
 
 ## Description
 
