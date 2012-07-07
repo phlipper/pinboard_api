@@ -1,7 +1,11 @@
-require "simplecov"
-SimpleCov.add_filter "spec"
-SimpleCov.command_name "MiniTest"
-SimpleCov.start
+begin
+  require "simplecov"
+  SimpleCov.add_filter "spec"
+  SimpleCov.command_name "MiniTest"
+  SimpleCov.start
+rescue LoadError
+  puts "unable to load 'simplecov'"
+end
 
 require "minitest/autorun"
 require "minitest/pride"
