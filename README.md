@@ -9,8 +9,13 @@ This client aims to cover all of the Pinboard [API v1](https://pinboard.in/api/)
 
 ## Requirements
 
-* This library requires Ruby 1.9.2 or newer.
 * You must have a paid Pinboard account to use the API. It is a great service and you can [signup here](https://pinboard.in/signup/) if you don't already have an account.
+* Currently tested on the following Ruby versions:
+  * 1.9.2
+  * 1.9.3
+  * JRuby (1.9 mode)
+
+_Note:_ Specs are currently passing on Rubinius with `RBXOPT=-X19` on my local machine but there is a failing spec on [Travis CI](http://travis-ci.org/#!/phlipper/pinboard_api). I will update the `README` with official support for Rubinus once everything runs smoothly on Travis.
 
 
 ## Installation
