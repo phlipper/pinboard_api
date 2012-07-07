@@ -1,4 +1,4 @@
-# PinboardApi
+# PinboardApi [![Build Status](https://secure.travis-ci.org/phlipper/pinboard_api.png?branch=master)](http://travis-ci.org/phlipper/pinboard_api)
 
 ## Description
 
