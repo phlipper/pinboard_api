@@ -125,7 +125,7 @@ describe PinboardApi::Post do
 
     describe "with custom tag" do
       before do
-        VCR.use_cassette("posts/recent/custom_tags", preserve_exact_body_bytes: true) do
+        VCR.use_cassette("posts/recent/custom_tag", preserve_exact_body_bytes: true) do
           @posts = PinboardApi::Post.recent(tag: %w[ruby programming])
         end
         @tags = @posts.map(&:tags).flatten
