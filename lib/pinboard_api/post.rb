@@ -21,6 +21,25 @@ module PinboardApi
       @tags.is_a?(String) ? @tags.split(/\s+/) : @tags
     end
 
+    def destroy
+      path = "/#{PinboardApi.api_version}/posts/delete"
+      body = PinboardApi.connection.get(path, url: @href).body["result"]
+
+      if body && body.fetch("code", "") == "done"
+        self
+      else
+        raise RuntimeError, "unknown response"
+      end
+    end
+
+    def self.delete(url)
+      if post = find(href: url).first
+        post.destroy
+      else
+        raise RuntimeError, "unknown response"
+      end
+    end
+
 
     def self.find(options = {})
       path = "/#{PinboardApi.api_version}/posts/get"

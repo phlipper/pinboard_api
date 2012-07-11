@@ -49,6 +49,46 @@ describe PinboardApi::Post do
     it { post.new("tags" => ["tag1", "tag2"]).tags.must_equal ["tag1", "tag2"] }
   end
 
+  describe "#destroy" do
+    describe "when successful" do
+      it "returns self when the remote post has been deleted" do
+        VCR.use_cassette("posts/destroy/successful") do
+          post = PinboardApi::Post.find(href: "https://pinboard.in/u:phlipper").first
+          post.destroy.must_equal post
+        end
+      end
+    end
+
+    describe "when not successful" do
+      it "raises an exception" do
+        Faraday::Response.any_instance.stubs(:body).returns("")
+        VCR.use_cassette("posts/destroy/unsuccessful") do
+          post = PinboardApi::Post.new
+          -> { post.destroy }.must_raise(RuntimeError)
+        end
+      end
+    end
+  end
+
+  describe "self.delete" do
+    describe "when successful" do
+      it "returns self when the remote post has been deleted" do
+        VCR.use_cassette("posts/delete/successful") do
+          post = PinboardApi::Post.delete("https://pinboard.in/u:phlipper")
+          post.must_be_kind_of PinboardApi::Post
+        end
+      end
+    end
+
+    describe "when not successful" do
+      it "raises an exception" do
+        Faraday::Response.any_instance.stubs(:body).returns("")
+        VCR.use_cassette("posts/delete/unsuccessful") do
+          -> { PinboardApi::Post.delete("xxBOGUSxxINVALIDxx") }.must_raise(RuntimeError)
+        end
+      end
+    end
+  end
 
   describe "self.find" do
     describe "found" do
