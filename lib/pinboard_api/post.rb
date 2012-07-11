@@ -14,13 +14,7 @@ module PinboardApi
     end
 
     def time
-      if @time.is_a?(Time)
-        @time
-      elsif @time.is_a?(Date)
-        @time.to_time
-      else
-        Time.parse(@time)
-      end
+      @time.is_a?(String) ? Time.parse(@time) : @time.to_time
     end
 
     def tags
