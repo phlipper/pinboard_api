@@ -125,13 +125,13 @@ PinboardApi::Tag.find("leadership")
 
 ```ruby
 tag = PinboardApi::Tag.find("foo")
+tag.destroy
 # => #<PinboardApi::Tag:0x007fdce45f56e0 @name="foo", @count=1>
 
-tag.delete
-# => #<PinboardApi::Tag:0x007fdce45f56e0 @name="foo", @count=1>
+# ... or ...
 
-tag = PinboardApi::Tag.find("foo")
-# => nil
+PinboardApi::Tag.delete("foo")
+# => #<PinboardApi::Tag:0x007fdce45f20f8 @name="foo", @count=1>
 ```
 
 * [tags/rename](https://pinboard.in/api#tags_rename) - rename a tag
