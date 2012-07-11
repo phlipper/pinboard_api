@@ -66,7 +66,15 @@ PinboardApi::Post.find(hash: "dbb720d788ffaeb0afb7572104072f4a", meta: "yes")
 PinboardApi::Post.find(dt: Date.parse("2012-07-07"))
 ```
 
-* ~~[posts/dates](https://pinboard.in/api#posts_dates) - list dates on which bookmarks were posted~~
+* [posts/dates](https://pinboard.in/api#posts_dates) - list dates on which bookmarks were posted
+
+```ruby
+PinboardApi::Post.dates
+# => [{"count"=>1, "date"=>#<Date: 2012-07-10 ((2456119j,0s,0n),+0s,2299161j)>}, {"count"=>3, "date"=>#<Date: 2012-07-08 ((2456117j,0s,0n),+0s,2299161j)>}, ...]
+
+PinboardApi::Post.dates(tag: "ruby")
+```
+
 * [posts/recent](https://pinboard.in/api#posts_recent) - fetch recent bookmarks
 
 ```ruby

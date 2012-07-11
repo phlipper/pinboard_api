@@ -137,6 +137,42 @@ describe PinboardApi::Post do
     end
   end
 
+  describe "self.dates" do
+    describe "with default values" do
+      before do
+        VCR.use_cassette("posts/dates/default_values", preserve_exact_body_bytes: true) do
+          @dates = PinboardApi::Post.dates
+        end
+        @date = @dates.first
+      end
+
+      it { @dates.must_be_kind_of Array }
+
+      it { @date.keys.must_include "count" }
+      it { @date.keys.must_include "date" }
+      it { @date["count"].must_be_kind_of Fixnum }
+      it { @date["date"].must_be_kind_of Date }
+    end
+
+    describe "with custom tag" do
+      before do
+        VCR.use_cassette("posts/dates/custom_tag", preserve_exact_body_bytes: true) do
+          @all_dates = PinboardApi::Post.dates
+          @tag_dates = PinboardApi::Post.dates(tag: "ruby")
+        end
+        @date = @tag_dates.first
+      end
+
+      it { @tag_dates.must_be_kind_of Array }
+      it { @tag_dates.size.must_be :<, @all_dates.size }
+
+      it { @date.keys.must_include "count" }
+      it { @date.keys.must_include "date" }
+      it { @date["count"].must_be_kind_of Fixnum }
+      it { @date["date"].must_be_kind_of Date }
+    end
+  end
+
 
   describe "self.tag_param_string" do
     before do

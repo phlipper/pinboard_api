@@ -65,6 +65,22 @@ module PinboardApi
       posts.map { |attrs| new(attrs) }
     end
 
+    def self.dates(options = {})
+      path = "/#{PinboardApi.api_version}/posts/dates"
+      tag = tag_param_string(options[:tag])
+
+      response = PinboardApi.connection.get(path) do |req|
+        req.params["tag"] = tag if tag
+      end
+
+      dates = response.body["dates"]["date"]
+      dates.map do |date|
+        date["count"] = date["count"].to_i
+        date["date"]  = Date.parse(date["date"])
+        date
+      end
+    end
+
 
     def self.tag_param_string(tags)
       tags.nil? ? nil : Array(tags).join(",")
