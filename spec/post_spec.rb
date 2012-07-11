@@ -97,4 +97,55 @@ describe PinboardApi::Post do
     it { @suggestions.keys.must_include "recommended" }
     it { @suggestions["recommended"].wont_be_empty }
   end
+
+  describe "self.recent" do
+    describe "with default values" do
+      before do
+        VCR.use_cassette("posts/recent/default_values", preserve_exact_body_bytes: true) do
+          @posts = PinboardApi::Post.recent
+        end
+      end
+
+      it { @posts.must_be_kind_of Array }
+      it { @posts.size.must_equal 15 }
+      it { @posts.first.href.wont_be_empty }
+    end
+
+    describe "with custom count" do
+      before do
+        VCR.use_cassette("posts/recent/custom_count", preserve_exact_body_bytes: true) do
+          @posts = PinboardApi::Post.recent(count: 3)
+        end
+      end
+
+      it { @posts.must_be_kind_of Array }
+      it { @posts.size.must_equal 3 }
+      it { @posts.first.href.wont_be_empty }
+    end
+
+    describe "with custom tag" do
+      before do
+        VCR.use_cassette("posts/recent/custom_tags", preserve_exact_body_bytes: true) do
+          @posts = PinboardApi::Post.recent(tag: %w[ruby programming])
+        end
+        @tags = @posts.map(&:tags).flatten
+      end
+
+      it { @posts.must_be_kind_of Array }
+      it { @tags.must_include "ruby" }
+      it { @tags.must_include "programming" }
+    end
+  end
+
+
+  describe "self.tag_param_string" do
+    before do
+      @post = PinboardApi::Post
+    end
+
+    it { @post.tag_param_string(nil).must_be_nil }
+    it { @post.tag_param_string("foo").must_equal "foo" }
+    it { @post.tag_param_string("foo,bar").must_equal "foo,bar" }
+    it { @post.tag_param_string(%w[foo bar]).must_equal "foo,bar" }
+  end
 end

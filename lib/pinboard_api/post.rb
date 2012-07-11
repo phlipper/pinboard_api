@@ -56,5 +56,24 @@ module PinboardApi
       response = PinboardApi.connection.get(path, url: url)
       response.body["suggested"]
     end
+
+    def self.recent(options = {})
+      path = "/#{PinboardApi.api_version}/posts/recent"
+      tag = tag_param_string(options[:tag])
+      count = options[:count]
+
+      response = PinboardApi.connection.get(path) do |req|
+        req.params["tag"] = tag if tag
+        req.params["count"] = count if count
+      end
+
+      posts = response.body["posts"]["post"]
+      posts.map { |attrs| new(attrs) }
+    end
+
+
+    def self.tag_param_string(tags)
+      tags.nil? ? nil : Array(tags).join(",")
+    end
   end
 end

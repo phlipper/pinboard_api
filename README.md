@@ -63,19 +63,26 @@ PinboardApi::Post.find(tag: "test")
 # => [#<PinboardApi::Post:0x007fdce4547388 @description="Test.com – Certification Program Management – Create Online Tests with This Authoring, Management, Training and E-Learning Software", @extended="", @hash="dbb720d788ffaeb0afb7572104072f4a", @href="http://test.com/", @tags="test junk", @time="2012-07-07T04:18:28Z">, ...]
 
 PinboardApi::Post.find(hash: "dbb720d788ffaeb0afb7572104072f4a", meta: "yes")
-# => [#<PinboardApi::Post:0x007fac2b9d6690 @description="Test.com – Certification Program Management – Create Online Tests with This Authoring, Management, Training and E-Learning Software", @extended="", @hash="dbb720d788ffaeb0afb7572104072f4a", @href="http://test.com/", @meta="73b192512e3e4829806f5eee0a6b456d", @tags="test junk", @time="2012-07-07T04:18:28Z">, ...]
-
 PinboardApi::Post.find(dt: Date.parse("2012-07-07"))
-# => [#<PinboardApi::Post:0x007fac2ba0fdf0 @description="Test.com – Certification Program Management – Create Online Tests with This Authoring, Management, Training and E-Learning Software", @extended="", @hash="dbb720d788ffaeb0afb7572104072f4a", @href="http://test.com/", @meta=nil, @tags="test junk", @time="2012-07-07T04:18:28Z">, ...]
 ```
 
 * ~~[posts/dates](https://pinboard.in/api#posts_dates) - list dates on which bookmarks were posted~~
-* ~~[posts/recent](https://pinboard.in/api#posts_recent) - fetch recent bookmarks~~
+* [posts/recent](https://pinboard.in/api#posts_recent) - fetch recent bookmarks
+
+```ruby
+PinboardApi::Post.recent
+# => [#<PinboardApi::Post:0x007ffe150e1fd0 @description="Techniques to Secure Your Website with Ruby on Rails..."> ...]
+
+PinboardApi::Post.recent(count: 3)
+PinboardApi::Post.recent(tag: "ruby")
+PinboardApi::Post.recent(count: 25, tag: ["ruby", "programming"])
+```
+
 * ~~[posts/all](https://pinboard.in/api#posts_all) - fetch all bookmarks by date, tag, or range~~
 * [posts/suggest](https://pinboard.in/api#posts_suggest) - fetch popular and recommended tags for a url
 
 ```ruby
-@suggestions = PinboardApi::Post.suggest("http://blog.com")
+PinboardApi::Post.suggest("http://blog.com")
 # => {"popular"=>["hosting", "blogs", "blog", "free"], "recommended"=>["blog", "blogging", "blogs", "free"]}
 ```
 
