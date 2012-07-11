@@ -10,7 +10,7 @@ describe PinboardApi::Post do
       "description" => "Test Description",
       "extended" => "Test Extended",
       "hash" => "d58e3582afa99040e27b92b13c8f2280",
-      "href" => "www.example.com",
+      "url" => "www.example.com",
       "tags" => "tag"
     }
   end
@@ -21,7 +21,7 @@ describe PinboardApi::Post do
   it { new_post.must_respond_to :description }
   it { new_post.must_respond_to :extended }
   it { new_post.must_respond_to :hash }
-  it { new_post.must_respond_to :href }
+  it { new_post.must_respond_to :url }
   it { new_post.must_respond_to :meta }
   it { new_post.must_respond_to :tags }
   it { new_post.must_respond_to :time }
@@ -32,7 +32,7 @@ describe PinboardApi::Post do
     it { obj.description.must_equal attributes["description"] }
     it { obj.extended.must_equal attributes["extended"] }
     it { obj.hash.must_equal attributes["hash"] }
-    it { obj.href.must_equal attributes["href"] }
+    it { obj.url.must_equal attributes["url"] }
     it { obj.tags.must_equal Array(attributes["tags"]) }
     it { obj.time.must_be_kind_of Time }
   end
@@ -100,7 +100,7 @@ describe PinboardApi::Post do
 
       it { @posts.must_be_kind_of Array }
       it { @posts.wont_be_empty }
-      it { @posts.first.href.wont_be_empty }
+      it { @posts.first.url.wont_be_empty }
     end
 
     describe "not found" do
@@ -148,7 +148,7 @@ describe PinboardApi::Post do
 
       it { @posts.must_be_kind_of Array }
       it { @posts.size.must_equal 15 }
-      it { @posts.first.href.wont_be_empty }
+      it { @posts.first.url.wont_be_empty }
     end
 
     describe "with custom count" do
@@ -160,7 +160,7 @@ describe PinboardApi::Post do
 
       it { @posts.must_be_kind_of Array }
       it { @posts.size.must_equal 3 }
-      it { @posts.first.href.wont_be_empty }
+      it { @posts.first.url.wont_be_empty }
     end
 
     describe "with custom tag" do

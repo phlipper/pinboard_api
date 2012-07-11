@@ -58,21 +58,21 @@ PinboardApi::Post.update
 * [posts/delete](https://pinboard.in/api#posts_delete) - delete an existing bookmark
 
 ```ruby
-post = PinboardApi::Post.find(href: "https://pinboard.in/u:phlipper").first
+post = PinboardApi::Post.find(url: "https://pinboard.in/u:phlipper").first
 post.destroy
-# => #<PinboardApi::Post:0x007ffcb5166cf0 @description="Pinboard - antisocial bookmarking", @extended="", @hash="bc857ba651d134be0c9a5267e943c3ce", @href="https://pinboard.in/u:phlipper", @meta=nil, @tags="test", @time="2012-07-11T09:16:14Z">
+# => #<PinboardApi::Post:0x007ffcb5166cf0 @description="Pinboard - antisocial bookmarking", @extended="", @hash="bc857ba651d134be0c9a5267e943c3ce", @url="https://pinboard.in/u:phlipper", @meta=nil, @tags="test", @time="2012-07-11T09:16:14Z">
 
 # ... or ...
 
 PinboardApi::Post.destroy("https://pinboard.in/u:phlipper")
-# => #<PinboardApi::Post:0x007f98d6946d78 @description="Pinboard - antisocial bookmarking", @extended="", @hash="bc857ba651d134be0c9a5267e943c3ce", @href="https://pinboard.in/u:phlipper", @meta=nil, @tags="test", @time="2012-07-11T09:17:36Z">
+# => #<PinboardApi::Post:0x007f98d6946d78 @description="Pinboard - antisocial bookmarking", @extended="", @hash="bc857ba651d134be0c9a5267e943c3ce", @url="https://pinboard.in/u:phlipper", @meta=nil, @tags="test", @time="2012-07-11T09:17:36Z">
 ```
 
 * [posts/get](https://pinboard.in/api#posts_get) - get bookmark for a single date, or fetch specific items by URL
 
 ```ruby
 PinboardApi::Post.find(tag: "test")
-# => [#<PinboardApi::Post:0x007fdce4547388 @description="Test.com – Certification Program Management – Create Online Tests with This Authoring, Management, Training and E-Learning Software", @extended="", @hash="dbb720d788ffaeb0afb7572104072f4a", @href="http://test.com/", @tags="test junk", @time="2012-07-07T04:18:28Z">, ...]
+# => [#<PinboardApi::Post:0x007fdce4547388 @description="Test.com – Certification Program Management – Create Online Tests with This Authoring, Management, Training and E-Learning Software", @extended="", @hash="dbb720d788ffaeb0afb7572104072f4a", @url="http://test.com/", @tags="test junk", @time="2012-07-07T04:18:28Z">, ...]
 
 PinboardApi::Post.find(hash: "dbb720d788ffaeb0afb7572104072f4a", meta: "yes")
 PinboardApi::Post.find(dt: Date.parse("2012-07-07"))

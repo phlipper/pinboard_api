@@ -1,14 +1,14 @@
 module PinboardApi
   class Post
 
-    attr_reader :description, :extended, :hash, :href, :meta
+    attr_reader :description, :extended, :hash, :meta, :url
 
     def initialize(attributes = {})
       @description = attributes["description"]
       @extended    = attributes["extended"]
       @hash        = attributes["hash"]
-      @href        = attributes["href"]
       @meta        = attributes["meta"]
+      @url         = attributes["url"] || attributes["href"]
       @tags        = attributes["tags"] || attributes["tag"]
       @time        = attributes["time"] || Time.now
     end
@@ -23,7 +23,7 @@ module PinboardApi
 
     def destroy
       path = "/#{PinboardApi.api_version}/posts/delete"
-      body = PinboardApi.connection.get(path, url: @href).body["result"]
+      body = PinboardApi.connection.get(path, url: @url).body["result"]
 
       if body && body.fetch("code", "") == "done"
         self
