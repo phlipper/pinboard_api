@@ -33,7 +33,7 @@ module PinboardApi
     end
 
     def self.delete(url)
-      if post = find(href: url).first
+      if post = find(url: url).first
         post.destroy
       else
         raise RuntimeError, "unknown response"

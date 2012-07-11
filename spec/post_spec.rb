@@ -53,7 +53,7 @@ describe PinboardApi::Post do
     describe "when successful" do
       it "returns self when the remote post has been deleted" do
         VCR.use_cassette("posts/destroy/successful") do
-          post = PinboardApi::Post.find(href: "https://pinboard.in/u:phlipper").first
+          post = PinboardApi::Post.find(url: "http://duckduckgo.com/").first
           post.destroy.must_equal post
         end
       end
@@ -74,7 +74,7 @@ describe PinboardApi::Post do
     describe "when successful" do
       it "returns self when the remote post has been deleted" do
         VCR.use_cassette("posts/delete/successful") do
-          post = PinboardApi::Post.delete("https://pinboard.in/u:phlipper")
+          post = PinboardApi::Post.delete("http://www.bing.com/")
           post.must_be_kind_of PinboardApi::Post
         end
       end
