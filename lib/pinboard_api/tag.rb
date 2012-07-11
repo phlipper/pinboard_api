@@ -45,7 +45,7 @@ module PinboardApi
       all.detect { |t| t.name == name }
     end
 
-    def self.delete(tag)
+    def self.destroy(tag)
       find(tag).destroy
     end
   end

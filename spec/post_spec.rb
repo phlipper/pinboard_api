@@ -52,7 +52,7 @@ describe PinboardApi::Post do
   describe "#destroy" do
     describe "when successful" do
       it "returns self when the remote post has been deleted" do
-        VCR.use_cassette("posts/destroy/successful") do
+        VCR.use_cassette("posts/destroy/successful_instance") do
           post = PinboardApi::Post.find(url: "http://duckduckgo.com/").first
           post.destroy.must_equal post
         end
@@ -62,7 +62,7 @@ describe PinboardApi::Post do
     describe "when not successful" do
       it "raises an exception" do
         Faraday::Response.any_instance.stubs(:body).returns("")
-        VCR.use_cassette("posts/destroy/unsuccessful") do
+        VCR.use_cassette("posts/destroy/unsuccessful_instance") do
           post = PinboardApi::Post.new
           -> { post.destroy }.must_raise(RuntimeError)
         end
@@ -70,11 +70,11 @@ describe PinboardApi::Post do
     end
   end
 
-  describe "self.delete" do
+  describe "self.destroy" do
     describe "when successful" do
       it "returns self when the remote post has been deleted" do
-        VCR.use_cassette("posts/delete/successful") do
-          post = PinboardApi::Post.delete("http://www.bing.com/")
+        VCR.use_cassette("posts/destroy/successful_class") do
+          post = PinboardApi::Post.destroy("http://www.bing.com/")
           post.must_be_kind_of PinboardApi::Post
         end
       end
@@ -83,8 +83,8 @@ describe PinboardApi::Post do
     describe "when not successful" do
       it "raises an exception" do
         Faraday::Response.any_instance.stubs(:body).returns("")
-        VCR.use_cassette("posts/delete/unsuccessful") do
-          -> { PinboardApi::Post.delete("xxBOGUSxxINVALIDxx") }.must_raise(RuntimeError)
+        VCR.use_cassette("posts/delete/unsuccessful_class") do
+          -> { PinboardApi::Post.destroy("xxBOGUSxxINVALIDxx") }.must_raise(RuntimeError)
         end
       end
     end

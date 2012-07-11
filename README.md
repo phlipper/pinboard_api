@@ -57,8 +57,6 @@ PinboardApi::Post.update
 * ~~[posts/add](https://pinboard.in/api#posts_add) - add a new bookmark~~
 * [posts/delete](https://pinboard.in/api#posts_delete) - delete an existing bookmark
 
-_Note: The instance method is `#destroy` and the class method is `.delete`. There is a method conflict with `#delete` on the instance somewhere that I was not able to decipher so I chose this convention instead._
-
 ```ruby
 post = PinboardApi::Post.find(href: "https://pinboard.in/u:phlipper").first
 post.destroy
@@ -66,7 +64,7 @@ post.destroy
 
 # ... or ...
 
-PinboardApi::Post.delete("https://pinboard.in/u:phlipper")
+PinboardApi::Post.destroy("https://pinboard.in/u:phlipper")
 # => #<PinboardApi::Post:0x007f98d6946d78 @description="Pinboard - antisocial bookmarking", @extended="", @hash="bc857ba651d134be0c9a5267e943c3ce", @href="https://pinboard.in/u:phlipper", @meta=nil, @tags="test", @time="2012-07-11T09:17:36Z">
 ```
 
@@ -130,7 +128,7 @@ tag.destroy
 
 # ... or ...
 
-PinboardApi::Tag.delete("foo")
+PinboardApi::Tag.destroy("foo")
 # => #<PinboardApi::Tag:0x007fdce45f20f8 @name="foo", @count=1>
 ```
 

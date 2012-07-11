@@ -32,7 +32,7 @@ module PinboardApi
       end
     end
 
-    def self.delete(url)
+    def self.destroy(url)
       if post = find(url: url).first
         post.destroy
       else
