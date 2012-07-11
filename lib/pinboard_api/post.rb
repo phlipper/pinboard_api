@@ -29,7 +29,7 @@ module PinboardApi
       end
 
       posts = response.body["posts"]
-      if posts.keys.include?("post")
+      if posts && posts.keys.include?("post")
         posts.inject([]) do |collection, tuple|
           key, attrs = tuple
           Array(collection) << new(attrs) if key == "post"
