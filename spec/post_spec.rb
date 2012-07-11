@@ -94,7 +94,7 @@ describe PinboardApi::Post do
     describe "found" do
       before do
         VCR.use_cassette("posts/find/found", preserve_exact_body_bytes: true) do
-          @posts = PinboardApi::Post.find("tag" => "test")
+          @posts = PinboardApi::Post.find(tag: "test")
         end
       end
 
