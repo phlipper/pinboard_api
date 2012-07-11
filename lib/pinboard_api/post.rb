@@ -51,5 +51,10 @@ module PinboardApi
       Time.parse(body["update"]["time"])
     end
 
+    def self.suggest(url)
+      path = "/#{PinboardApi.api_version}/posts/suggest"
+      response = PinboardApi.connection.get(path, url: url)
+      response.body["suggested"]
+    end
   end
 end

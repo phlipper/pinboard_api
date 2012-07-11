@@ -83,4 +83,18 @@ describe PinboardApi::Post do
 
     it { @last_update.must_be_kind_of Time }
   end
+
+  describe "self.suggest" do
+    before do
+      VCR.use_cassette("posts/suggest") do
+        @suggestions = PinboardApi::Post.suggest("http://blog.com")
+      end
+    end
+
+    it { @suggestions.must_be_kind_of Hash }
+    it { @suggestions.keys.must_include "popular" }
+    it { @suggestions["popular"].wont_be_empty }
+    it { @suggestions.keys.must_include "recommended" }
+    it { @suggestions["recommended"].wont_be_empty }
+  end
 end

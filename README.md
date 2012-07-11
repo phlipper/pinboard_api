@@ -72,7 +72,12 @@ PinboardApi::Post.find(dt: Date.parse("2012-07-07"))
 * ~~[posts/dates](https://pinboard.in/api#posts_dates) - list dates on which bookmarks were posted~~
 * ~~[posts/recent](https://pinboard.in/api#posts_recent) - fetch recent bookmarks~~
 * ~~[posts/all](https://pinboard.in/api#posts_all) - fetch all bookmarks by date, tag, or range~~
-* ~~[posts/suggest](https://pinboard.in/api#posts_suggest) - fetch popular and recommended tags for a url~~
+* [posts/suggest](https://pinboard.in/api#posts_suggest) - fetch popular and recommended tags for a url
+
+```ruby
+@suggestions = PinboardApi::Post.suggest("http://blog.com")
+# => {"popular"=>["hosting", "blogs", "blog", "free"], "recommended"=>["blog", "blogging", "blogs", "free"]}
+```
 
 
 ### Tag
