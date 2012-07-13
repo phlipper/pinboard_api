@@ -39,6 +39,22 @@ $ gem install pinboard_api
 ```
 
 
+## Getting Started
+
+You will need to set your username and password for the Pinboard service.
+
+```ruby
+PinboardApi.username = "phlipper"
+PinboardApi.password = "[REDACTED]"
+```
+
+You may also set the SSL options which will be passed through to [Faraday](https://github.com/technoweenie/faraday#readme):
+
+```ruby
+PinboardApi.ssl_options = { ca_file: "/opt/local/share/curl/curl-ca-bundle.crt" }
+```
+
+
 ## Usage
 
 The `PinboardApi` namespace implements the 3 primary object types: `Post`, `Tag`, and `User`.
@@ -61,8 +77,6 @@ PinboardApi::Post.update
 post = PinboardApi::Post.find(url: "https://pinboard.in/u:phlipper").first
 post.destroy
 # => #<PinboardApi::Post:0x007ffcb5166cf0 @description="Pinboard - antisocial bookmarking", @extended="", @hash="bc857ba651d134be0c9a5267e943c3ce", @url="https://pinboard.in/u:phlipper", @meta=nil, @tags="test", @time="2012-07-11T09:16:14Z">
-
-# ... or ...
 
 PinboardApi::Post.destroy("https://pinboard.in/u:phlipper")
 # => #<PinboardApi::Post:0x007f98d6946d78 @description="Pinboard - antisocial bookmarking", @extended="", @hash="bc857ba651d134be0c9a5267e943c3ce", @url="https://pinboard.in/u:phlipper", @meta=nil, @tags="test", @time="2012-07-11T09:17:36Z">
@@ -125,8 +139,6 @@ PinboardApi::Tag.find("leadership")
 tag = PinboardApi::Tag.find("foo")
 tag.destroy
 # => #<PinboardApi::Tag:0x007fdce45f56e0 @name="foo", @count=1>
-
-# ... or ...
 
 PinboardApi::Tag.destroy("foo")
 # => #<PinboardApi::Tag:0x007fdce45f20f8 @name="foo", @count=1>
