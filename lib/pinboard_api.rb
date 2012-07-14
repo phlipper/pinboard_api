@@ -6,6 +6,8 @@ require "core_ext/blank"
 require "core_ext/hash"
 
 require "pinboard_api/exceptions"
+require "pinboard_api/request_utils"
+
 require "pinboard_api/post"
 require "pinboard_api/tag"
 require "pinboard_api/user"

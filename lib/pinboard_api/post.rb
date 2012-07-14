@@ -1,5 +1,6 @@
 module PinboardApi
   class Post
+    include PinboardApi::RequestUtils
 
     attr_reader :description, :extended, :hash, :meta, :url
 
@@ -54,11 +55,6 @@ module PinboardApi
       if @description.blank?
         raise InvalidPostError, "description cannot be blank"
       end
-    end
-
-    def yes_no(value)
-      return nil if value.nil?
-      value ? "yes" : "no"
     end
 
     def parse_result_code(result)
@@ -150,14 +146,6 @@ module PinboardApi
         end
         collection
       end
-    end
-
-    def self.dt_param_string(time)
-      time.nil? ? nil : time.utc.strftime("%Y-%m-%dT%H:%M:%SZ")
-    end
-
-    def self.tag_param_string(tags)
-      tags.nil? ? nil : Array.wrap(tags).join(",")
     end
   end
 end

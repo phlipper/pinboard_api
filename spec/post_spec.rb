@@ -174,16 +174,6 @@ describe PinboardApi::Post do
 
 
   # #######################
-  # yes_no
-  # #######################
-  describe "yes_no" do
-    it { post.new.yes_no(nil).must_be_nil }
-    it { post.new.yes_no(true).must_equal "yes" }
-    it { post.new.yes_no(false).must_equal "no" }
-  end
-
-
-  # #######################
   # self.destroy
   # #######################
   describe "self.destroy" do
@@ -503,25 +493,5 @@ describe PinboardApi::Post do
       it { @urls.must_include "http://www.foo.bar" }
       it { @urls.must_include "http://www.baz.qux" }
     end
-  end
-
-  # #######################
-  # self.dt_param_string
-  # #######################
-  describe "self.dt_param_string" do
-    let(:time) { Time.new(2012, 01, 01, 0, 0, 0, 0) }
-
-    it { post.dt_param_string(nil).must_be_nil }
-    it { post.dt_param_string(time).must_equal "2012-01-01T00:00:00Z" }
-  end
-
-  # #######################
-  # self.tag_param_string
-  # #######################
-  describe "self.tag_param_string" do
-    it { post.tag_param_string(nil).must_be_nil }
-    it { post.tag_param_string("foo").must_equal "foo" }
-    it { post.tag_param_string("foo,bar").must_equal "foo,bar" }
-    it { post.tag_param_string(%w[foo bar]).must_equal "foo,bar" }
   end
 end
