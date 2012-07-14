@@ -70,7 +70,23 @@ PinboardApi::Post.update
 # => 2012-07-07 04:18:28 UTC
 ```
 
-* ~~[posts/add](https://pinboard.in/api#posts_add) - add a new bookmark~~
+* [posts/add](https://pinboard.in/api#posts_add) - add a new bookmark
+
+```ruby
+attributes = { url: "http://phlippers.net/pinboard_api", description: "A Ruby client for the Pinboard.in API", tags: %[ruby awesomesauce] }
+
+post = PinboardApi::Post.new(attributes)
+post.save
+# => #<PinboardApi::Post:0x007fb42d905a68 @description="A Ruby client for the Pinboard.in API", @extended=nil, @hash=nil, @meta=nil, @url="http://phlippers.net/pinboard_api", @tags="ruby awesomesauce", @time=2012-07-13 23:03:34 -0700>
+
+post = PinboardApi::Post.new
+post.url = attributes[:url]
+post.description = attributes[:description]
+post.save
+
+PinboardApi::Post.create(attributes)
+```
+
 * [posts/delete](https://pinboard.in/api#posts_delete) - delete an existing bookmark
 
 ```ruby
@@ -176,7 +192,6 @@ PinboardApi::User.secret
 
 ## TODO
 
-* Implement Post.add/create
 * Implement support for the new [`auth_token`](http://pinboard.in/api/#authentication)
 * Implement support for rate limiting
 

@@ -60,6 +60,84 @@ describe PinboardApi::Post do
 
 
   # #######################
+  # save
+  # #######################
+  describe "#save" do
+    describe "success" do
+      let(:url) { "http://phlippers.net/pinboard_api" }
+      let(:description) { "A Ruby client for the Pinboard.in API" }
+      let(:extended) { "Extended Awesomeness" }
+      let(:tags) { %w[ruby programming] }
+
+      before do
+        PinboardApi::VCR.use_cassette("posts/save") do
+          post.destroy(url: url) rescue nil  # make sure it adds one
+          params = {
+            url: url, description: description, extended: extended, tags: tags
+          }
+          @post1 = post.new(params).save
+          @post2 = post.find(url: url).first
+        end
+      end
+
+      it { @post1.must_be_kind_of PinboardApi::Post }
+      it { @post1.url.must_equal url }
+      it { @post1.description.must_equal description }
+      it { @post1.extended.must_equal extended }
+      it { @post1.tags.must_equal tags }
+
+      it { @post2.url.must_equal @post1.url }
+      it { @post2.description.must_equal @post1.description }
+      it { @post2.extended.must_equal @post1.extended }
+      it { @post2.tags.must_equal @post1.tags }
+    end
+
+    describe "failure" do
+      it { -> { post.new.save }.must_raise(PinboardApi::InvalidPostError) }
+    end
+  end
+
+
+  # #######################
+  # self.create
+  # #######################
+  describe "self.create" do
+    describe "success" do
+      let(:url) { "https://github.com/phlipper/pinboard_api" }
+      let(:description) { "PinboardAPI on Github" }
+      let(:extended) { "Extended Guthub Awesomeness" }
+      let(:tags) { %w[pinboard github] }
+
+      before do
+        PinboardApi::VCR.use_cassette("posts/create") do
+          post.destroy(url: url) rescue nil  # make sure it adds one
+          params = {
+            url: url, description: description, extended: extended, tags: tags
+          }
+          @post1 = post.create(params)
+          @post2 = post.find(url: url).first
+        end
+      end
+
+      it { @post1.must_be_kind_of PinboardApi::Post }
+      it { @post1.url.must_equal url }
+      it { @post1.description.must_equal description }
+      it { @post1.extended.must_equal extended }
+      it { @post1.tags.must_equal tags }
+
+      it { @post2.url.must_equal @post1.url }
+      it { @post2.description.must_equal @post1.description }
+      it { @post2.extended.must_equal @post1.extended }
+      it { @post2.tags.must_equal @post1.tags }
+    end
+
+    describe "failure" do
+      it { -> { post.create({}) }.must_raise(PinboardApi::InvalidPostError) }
+    end
+  end
+
+
+  # #######################
   # destroy
   # #######################
   describe "#destroy" do
@@ -77,10 +155,31 @@ describe PinboardApi::Post do
         Faraday::Response.any_instance.stubs(:body).returns("")
         PinboardApi::VCR.use_cassette("posts/destroy/unsuccessful_instance") do
           post = PinboardApi::Post.new
-          -> { post.destroy }.must_raise(RuntimeError)
+          -> { post.destroy }.must_raise(PinboardApi::InvalidResponseError)
         end
       end
     end
+  end
+
+
+  # #######################
+  # validate!
+  # #######################
+  describe "validate!" do
+    let(:exception) { PinboardApi::InvalidPostError }
+
+    it { -> { post.new.validate! }.must_raise(exception) }
+    it { -> { post.new(url: "x").validate! }.must_raise(exception) }
+  end
+
+
+  # #######################
+  # yes_no
+  # #######################
+  describe "yes_no" do
+    it { post.new.yes_no(nil).must_be_nil }
+    it { post.new.yes_no(true).must_equal "yes" }
+    it { post.new.yes_no(false).must_equal "no" }
   end
 
 
@@ -101,7 +200,9 @@ describe PinboardApi::Post do
       it "raises an exception" do
         Faraday::Response.any_instance.stubs(:body).returns("")
         PinboardApi::VCR.use_cassette("posts/delete/unsuccessful_class") do
-          -> { PinboardApi::Post.destroy("xxBOGUSxxINVALIDxx") }.must_raise(RuntimeError)
+          -> {
+            PinboardApi::Post.destroy("xxBOGUSxxINVALIDxx")
+          }.must_raise(PinboardApi::InvalidResponseError)
         end
       end
     end
@@ -148,6 +249,17 @@ describe PinboardApi::Post do
         it { @posts.must_be_kind_of Array }
         it { @tags.must_include "ruby" }
         it { @tags.must_include "programming" }
+      end
+
+      describe "with meta" do
+        before do
+          PinboardApi::VCR.use_cassette("posts/all/with_meta") do
+            @posts = PinboardApi::Post.all(meta: true)
+          end
+        end
+
+        it { @posts.must_be_kind_of Array }
+        it { @posts.first.meta.wont_be_empty }
       end
 
       describe "with custom times" do

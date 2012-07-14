@@ -23,41 +23,76 @@ module PinboardApi
       @tags.is_a?(String) ? @tags.split(/\s+/) : @tags
     end
 
+    def save(options = {})
+      validate!
+      path = "/#{PinboardApi.api_version}/posts/add"
+      params = {
+        url:         @url,
+        description: @description,
+        extended:    @extended,
+        tags:        Post.tag_param_string(tags),
+        dt:          options[:dt],
+        replace:     yes_no(options[:replace]),
+        shared:      yes_no(options[:shared]),
+        toread:      yes_no(options[:toread])
+      }
+
+      result = PinboardApi.request(path, params).body["result"]
+      parse_result_code(result)
+    end
+
     def destroy
       path = "/#{PinboardApi.api_version}/posts/delete"
-      body = PinboardApi.request(path, url: @url).body["result"]
+      result = PinboardApi.request(path, url: @url).body["result"]
+      parse_result_code(result)
+    end
 
-      if body && body.fetch("code", "") == "done"
-        self
-      else
-        raise RuntimeError, "unknown response"
+    def validate!
+      if @url.blank?
+        raise InvalidPostError, "url cannot be blank"
       end
+      if @description.blank?
+        raise InvalidPostError, "description cannot be blank"
+      end
+    end
+
+    def yes_no(value)
+      return nil if value.nil?
+      value ? "yes" : "no"
+    end
+
+    def parse_result_code(result)
+      unless result && code = result.fetch("code", false)
+        raise InvalidResponseError, "unknown response"
+      end
+
+      code == "done" ? self : raise(InvalidResponseError, code.to_s)
+    end
+
+    def self.create(attributes)
+      new(attributes).save
     end
 
     def self.destroy(url)
       if post = find(url: url).first
         post.destroy
       else
-        raise RuntimeError, "unknown response"
+        raise InvalidResponseError, "unknown response"
       end
     end
 
     def self.all(options = {})
       path = "/#{PinboardApi.api_version}/posts/all"
+      params = {
+        tag:     tag_param_string(options[:tag]),
+        start:   options[:start],
+        results: options[:results],
+        fromdt:  dt_param_string(options[:fromdt]),
+        todt:    dt_param_string(options[:todt]),
+        meta:    (options[:meta] ? 1 : 0)
+      }
 
-      tag    = tag_param_string(options[:tag])
-      fromdt = dt_param_string(options[:fromdt])
-      todt   = dt_param_string(options[:todt])
-
-      response = PinboardApi.request(path) do |req|
-        req.params["tag"]     = tag if tag
-        req.params["start"]   = options[:start] if options[:start]
-        req.params["results"] = options[:results] if options[:results]
-        req.params["fromdt"]  = fromdt if fromdt
-        req.params["todt"]    = todt if todt
-        req.params["meta"]    = 1 if options[:meta]
-      end
-
+      response = PinboardApi.request(path, params)
       extract_posts(response.body["posts"])
     end
 
@@ -83,24 +118,15 @@ module PinboardApi
 
     def self.recent(options = {})
       path = "/#{PinboardApi.api_version}/posts/recent"
-      tag = tag_param_string(options[:tag])
-      count = options[:count]
-
-      response = PinboardApi.request(path) do |req|
-        req.params["tag"] = tag if tag
-        req.params["count"] = count if count
-      end
-
+      params = { tag: tag_param_string(options[:tag]), count: options[:count] }
+      response = PinboardApi.request(path, params)
       extract_posts(response.body["posts"])
     end
 
     def self.dates(options = {})
       path = "/#{PinboardApi.api_version}/posts/dates"
       tag = tag_param_string(options[:tag])
-
-      response = PinboardApi.request(path) do |req|
-        req.params["tag"] = tag if tag
-      end
+      response = PinboardApi.request(path, tag: tag)
 
       dates = response.body["dates"]["date"]
       dates.map do |date|
