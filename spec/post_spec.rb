@@ -151,8 +151,8 @@ describe PinboardApi::Post do
       end
 
       describe "with custom times" do
-        let(:fromdt) { Time.new(2012, 05, 01).utc }
-        let(:todt)   { Time.new(2012, 06, 01).utc }
+        let(:fromdt) { Time.gm(2012, 05, 01) }
+        let(:todt)   { Time.gm(2012, 06, 01) }
 
         before do
           VCR.use_cassette("posts/all/custom_times", preserve_exact_body_bytes: true) do
