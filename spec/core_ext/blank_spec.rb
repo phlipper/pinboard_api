@@ -13,7 +13,6 @@ describe Object do
   it { ["foo"].wont_be :blank? }
 end
 
-
 describe String do
   it { "".must_be :blank? }
   it { "foo".wont_be :blank? }

@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe PinboardApi::Tag do
-  let(:tag) { PinboardApi::Tag.new({"name" => "tag", "count" => 1}) }
+  let(:tag) { PinboardApi::Tag.new(name: "tag", count: 1) }
 
   it { tag.must_respond_to :name }
   it { tag.name.must_equal "tag" }
