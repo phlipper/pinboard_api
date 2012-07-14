@@ -1,0 +1,307 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>PinboardAPI by phlipper</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>PinboardAPI</h1>
+        <p>A Ruby client for the Pinboard.in API</p>
+        <p class="view"><a href="https://github.com/phlipper/pinboard_api">View the Project on GitHub <small>phlipper/pinboard_api</small></a></p>
+        <ul>
+          <li><a href="https://github.com/phlipper/pinboard_api/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/phlipper/pinboard_api/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/phlipper/pinboard_api">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>PinboardApi <a href="http://travis-ci.org/phlipper/pinboard_api"><img src="https://secure.travis-ci.org/phlipper/pinboard_api.png?branch=master" alt="Build Status"></a> <a href="https://codeclimate.com/github/phlipper/pinboard_api"><img src="https://codeclimate.com/badge.png" alt="Code Climate"></a>
+</h1>
+
+<h2>Description</h2>
+
+<p>A Ruby API client for <a href="https://pinboard.in/">Pinboard.in</a>, the bookmarking website for introverted people in a hurry.</p>
+
+<p>This client aims to cover all of the Pinboard <a href="https://pinboard.in/api/">API v1</a>.</p>
+
+<h2>Requirements</h2>
+
+<ul>
+<li>You must have a paid Pinboard account to use the API. It is a great service and you can <a href="https://pinboard.in/signup/">signup here</a> if you don't already have an account.</li>
+<li>Currently tested on the following Ruby versions:
+
+<ul>
+<li>1.9.2</li>
+<li>1.9.3</li>
+<li>JRuby (1.9 mode)</li>
+</ul>
+</li>
+</ul><p><em>Note:</em> Specs are currently passing on Rubinius with <code>RBXOPT=-X19</code> on my local machine but there is a failing spec on <a href="http://travis-ci.org/#!/phlipper/pinboard_api">Travis CI</a>. I will update the <code>README</code> with official support for Rubinus once everything runs smoothly on Travis.</p>
+
+<h2>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<div class="highlight">
+<pre><span class="n">gem</span> <span class="s2">"pinboard_api"</span>
+</pre>
+</div>
+
+
+<p>And then execute:</p>
+
+<pre><code>$ bundle
+</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre><code>$ gem install pinboard_api
+</code></pre>
+
+<h2>Getting Started</h2>
+
+<p>You will need to set your username and password for the Pinboard service:</p>
+
+<div class="highlight">
+<pre><span class="no">PinboardApi</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="s2">"phlipper"</span>
+<span class="no">PinboardApi</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="s2">"[REDACTED]"</span>
+</pre>
+</div>
+
+
+<p>Alternately, you may use the new <a href="http://pinboard.in/api/#authentication"><code>auth_token</code></a> method:</p>
+
+<div class="highlight">
+<pre><span class="no">PinboardApi</span><span class="o">.</span><span class="n">auth_token</span> <span class="o">=</span> <span class="s2">"[REDACTED]"</span>
+</pre>
+</div>
+
+
+<p>You may also set the SSL options which will be passed through to <a href="https://github.com/technoweenie/faraday#readme">Faraday</a>:</p>
+
+<div class="highlight">
+<pre><span class="no">PinboardApi</span><span class="o">.</span><span class="n">ssl_options</span> <span class="o">=</span> <span class="p">{</span> <span class="n">ca_file</span><span class="p">:</span> <span class="s2">"/opt/local/share/curl/curl-ca-bundle.crt"</span> <span class="p">}</span>
+</pre>
+</div>
+
+
+<h2>Usage</h2>
+
+<p>The <code>PinboardApi</code> namespace implements the 3 primary object types: <code>Post</code>, <code>Tag</code>, and <code>User</code>.</p>
+
+<h3>Post</h3>
+
+<ul>
+<li>
+<a href="https://pinboard.in/api#update">posts/update</a> - Check to see when a user last posted an item.</li>
+</ul><div class="highlight">
+<pre><span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">last_update</span>
+<span class="c1"># =&gt; 2012-07-07 04:18:28 UTC</span>
+</pre>
+</div>
+
+
+<ul>
+<li>
+<a href="https://pinboard.in/api#posts_add">posts/add</a> - add a new bookmark</li>
+</ul><div class="highlight">
+<pre><span class="n">attributes</span> <span class="o">=</span> <span class="p">{</span> <span class="n">url</span><span class="p">:</span> <span class="s2">"http://phlippers.net/pinboard_api"</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="s2">"A Ruby client for the Pinboard.in API"</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="sx">%[ruby awesomesauce]</span> <span class="p">}</span>
+
+<span class="n">post</span> <span class="o">=</span> <span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+<span class="n">post</span><span class="o">.</span><span class="n">save</span>
+<span class="c1"># =&gt; #&lt;PinboardApi::Post:0x007fb42d905a68 @description="A Ruby client for the Pinboard.in API", @extended=nil, @hash=nil, @meta=nil, @url="http://phlippers.net/pinboard_api", @tags="ruby awesomesauce", @time=2012-07-13 23:03:34 -0700&gt;</span>
+
+<span class="n">post</span> <span class="o">=</span> <span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">new</span>
+<span class="n">post</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">attributes</span><span class="o">[</span><span class="ss">:url</span><span class="o">]</span>
+<span class="n">post</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">attributes</span><span class="o">[</span><span class="ss">:description</span><span class="o">]</span>
+<span class="n">post</span><span class="o">.</span><span class="n">save</span>
+
+<span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+</pre>
+</div>
+
+
+<ul>
+<li>
+<a href="https://pinboard.in/api#posts_delete">posts/delete</a> - delete an existing bookmark</li>
+</ul><div class="highlight">
+<pre><span class="n">post</span> <span class="o">=</span> <span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="s2">"https://pinboard.in/u:phlipper"</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+<span class="n">post</span><span class="o">.</span><span class="n">destroy</span>
+<span class="c1"># =&gt; #&lt;PinboardApi::Post:0x007ffcb5166cf0 @description="Pinboard - antisocial bookmarking", @extended="", @hash="bc857ba651d134be0c9a5267e943c3ce", @url="https://pinboard.in/u:phlipper", @meta=nil, @tags="test", @time="2012-07-11T09:16:14Z"&gt;</span>
+
+<span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">destroy</span><span class="p">(</span><span class="s2">"https://pinboard.in/u:phlipper"</span><span class="p">)</span>
+<span class="c1"># =&gt; #&lt;PinboardApi::Post:0x007f98d6946d78 @description="Pinboard - antisocial bookmarking", @extended="", @hash="bc857ba651d134be0c9a5267e943c3ce", @url="https://pinboard.in/u:phlipper", @meta=nil, @tags="test", @time="2012-07-11T09:17:36Z"&gt;</span>
+</pre>
+</div>
+
+
+<ul>
+<li>
+<a href="https://pinboard.in/api#posts_get">posts/get</a> - get bookmark for a single date, or fetch specific items by URL</li>
+</ul><div class="highlight">
+<pre><span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span> <span class="s2">"test"</span><span class="p">)</span>
+<span class="c1"># =&gt; [#&lt;PinboardApi::Post:0x007fdce4547388 @description="Test.com – Certification Program Management – Create Online Tests with This Authoring, Management, Training and E-Learning Software", @extended="", @hash="dbb720d788ffaeb0afb7572104072f4a", @url="http://test.com/", @tags="test junk", @time="2012-07-07T04:18:28Z"&gt;, ...]</span>
+
+<span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="nb">hash</span><span class="p">:</span> <span class="s2">"dbb720d788ffaeb0afb7572104072f4a"</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="s2">"yes"</span><span class="p">)</span>
+<span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="no">Date</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">"2012-07-07"</span><span class="p">))</span>
+</pre>
+</div>
+
+
+<ul>
+<li>
+<a href="https://pinboard.in/api#posts_dates">posts/dates</a> - list dates on which bookmarks were posted</li>
+</ul><div class="highlight">
+<pre><span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">dates</span>
+<span class="c1"># =&gt; [{"count"=&gt;1, "date"=&gt;#&lt;Date: 2012-07-10 ((2456119j,0s,0n),+0s,2299161j)&gt;}, {"count"=&gt;3, "date"=&gt;#&lt;Date: 2012-07-08 ((2456117j,0s,0n),+0s,2299161j)&gt;}, ...]</span>
+
+<span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">dates</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span> <span class="s2">"ruby"</span><span class="p">)</span>
+</pre>
+</div>
+
+
+<ul>
+<li>
+<a href="https://pinboard.in/api#posts_recent">posts/recent</a> - fetch recent bookmarks</li>
+</ul><div class="highlight">
+<pre><span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">recent</span>
+<span class="c1"># =&gt; [#&lt;PinboardApi::Post:0x007ffe150e1fd0 @description="Techniques to Secure Your Website with Ruby on Rails..."&gt; ...]</span>
+
+<span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">recent</span><span class="p">(</span><span class="n">count</span><span class="p">:</span> <span class="mi">3</span><span class="p">)</span>
+<span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">recent</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span> <span class="s2">"ruby"</span><span class="p">)</span>
+<span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">recent</span><span class="p">(</span><span class="n">count</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="o">[</span><span class="s2">"ruby"</span><span class="p">,</span> <span class="s2">"programming"</span><span class="o">]</span><span class="p">)</span>
+</pre>
+</div>
+
+
+<ul>
+<li>
+<a href="https://pinboard.in/api#posts_all">posts/all</a> - fetch all bookmarks by date, tag, or range</li>
+</ul><div class="highlight">
+<pre><span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">all</span>
+<span class="c1"># =&gt; [#&lt;PinboardApi::Post:0x007ffe150e1fd0 @description="Techniques to Secure Your Website with Ruby on Rails..."&gt; ...]</span>
+
+<span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span> <span class="sx">%w[ruby programming]</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="mi">30</span><span class="p">)</span>
+<span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="n">fromdt</span><span class="p">:</span> <span class="mi">2</span><span class="o">.</span><span class="n">weeks</span><span class="o">.</span><span class="n">ago</span><span class="p">,</span> <span class="n">todt</span><span class="p">:</span> <span class="mi">1</span><span class="o">.</span><span class="n">week</span><span class="o">.</span><span class="n">ago</span><span class="p">)</span>
+</pre>
+</div>
+
+
+<ul>
+<li>
+<a href="https://pinboard.in/api#posts_suggest">posts/suggest</a> - fetch popular and recommended tags for a url</li>
+</ul><div class="highlight">
+<pre><span class="no">PinboardApi</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">suggest</span><span class="p">(</span><span class="s2">"http://blog.com"</span><span class="p">)</span>
+<span class="c1"># =&gt; {"popular"=&gt;["hosting", "blogs", "blog", "free"], "recommended"=&gt;["blog", "blogging", "blogs", "free"]}</span>
+</pre>
+</div>
+
+
+<h3>Tag</h3>
+
+<ul>
+<li>
+<a href="https://pinboard.in/api#tags_get">tags/get</a> - fetch all tags</li>
+</ul><div class="highlight">
+<pre><span class="no">PinboardApi</span><span class="o">::</span><span class="no">Tag</span><span class="o">.</span><span class="n">all</span>
+<span class="c1"># =&gt; [#&lt;PinboardApi::Tag:0x007fdce41f4f00 @name="leadership", @count=1&gt;, #&lt;PinboardApi::Tag:0x007fdce41f4e10 @name="date", @count=1&gt;, ... ]</span>
+
+<span class="no">PinboardApi</span><span class="o">::</span><span class="no">Tag</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"leadership"</span><span class="p">)</span>
+<span class="c1"># =&gt; #&lt;PinboardApi::Tag:0x007fdce4827eb8 @name="leadership", @count=1&gt;</span>
+</pre>
+</div>
+
+
+<ul>
+<li>
+<a href="https://pinboard.in/api#tags_delete">tags/delete</a> - delete a tag from all bookmarks</li>
+</ul><div class="highlight">
+<pre><span class="n">tag</span> <span class="o">=</span> <span class="no">PinboardApi</span><span class="o">::</span><span class="no">Tag</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">)</span>
+<span class="n">tag</span><span class="o">.</span><span class="n">destroy</span>
+<span class="c1"># =&gt; #&lt;PinboardApi::Tag:0x007fdce45f56e0 @name="foo", @count=1&gt;</span>
+
+<span class="no">PinboardApi</span><span class="o">::</span><span class="no">Tag</span><span class="o">.</span><span class="n">destroy</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">)</span>
+<span class="c1"># =&gt; #&lt;PinboardApi::Tag:0x007fdce45f20f8 @name="foo", @count=1&gt;</span>
+</pre>
+</div>
+
+
+<ul>
+<li>
+<a href="https://pinboard.in/api#tags_rename">tags/rename</a> - rename a tag</li>
+</ul><div class="highlight">
+<pre><span class="n">tag</span> <span class="o">=</span> <span class="no">PinboardApi</span><span class="o">::</span><span class="no">Tag</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">)</span>
+<span class="c1"># =&gt; #&lt;PinboardApi::Tag:0x007fdce461bcc8 @name="foo", @count=1&gt;</span>
+
+<span class="n">tag</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">"foo2"</span><span class="p">)</span>
+<span class="c1"># =&gt; #&lt;PinboardApi::Tag:0x007fdce4c4bb48 @name="foo2", @count=1&gt;</span>
+</pre>
+</div>
+
+
+<h3>User</h3>
+
+<ul>
+<li>
+<a href="https://pinboard.in/api#user_secret">user/secret</a> - get the secret RSS token (allows viewing user's private RSS feeds)</li>
+</ul><div class="highlight">
+<pre><span class="no">PinboardApi</span><span class="o">::</span><span class="no">User</span><span class="o">.</span><span class="n">secret</span>
+<span class="c1"># =&gt; "c3b0f4073ea37c4b1df5"</span>
+</pre>
+</div>
+
+
+<h2>TODO</h2>
+
+<ul>
+<li>Implement support for rate limiting</li>
+</ul><h2>Contributing</h2>
+
+<ol>
+<li>Fork it</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Added some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol><h2>License</h2>
+
+<p><strong>pinboard_api</strong></p>
+
+<ul>
+<li>Freely distributable and licensed under the <a href="http://phlipper.mit-license.org/2012/license.html">MIT license</a>.</li>
+<li>Copyright (c) 2012 Phil Cohen (<a href="mailto:github@phlippers.net">github@phlippers.net</a>) <a href="http://coderwall.com/phlipper"><img src="http://api.coderwall.com/phlipper/endorsecount.png" alt="endorse"></a>
+</li>
+<li><a href="http://phlippers.net/">http://phlippers.net/</a></li>
+</ul>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/phlipper">phlipper</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-10172882-2");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
