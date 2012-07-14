@@ -3,6 +3,8 @@ module PinboardApi
     attr_reader :name, :count
 
     def initialize(attributes = {})
+      attributes.stringify_keys!
+
       @name  = attributes["name"] || attributes["tag"]
       @count = attributes["count"].to_i
     end
@@ -13,23 +15,23 @@ module PinboardApi
         req.params["old"] = @name
         req.params["new"] = new_name.to_s
       end
-      body = response.body
+      result = response.body["result"]
 
-      if body["result"] == "done"
-        Tag.new("name" => new_name, "count" => @count)
+      if result == "done"
+        Tag.new(name: new_name, count: @count)
       else
-        raise body["result"].to_s
+        raise result.to_s
       end
     end
 
     def destroy
       path = "/#{PinboardApi.api_version}/tags/delete"
-      body = PinboardApi.request(path, tag: @name).body
+      result = PinboardApi.request(path, tag: @name).body["result"]
 
-      if body["result"] == "done"
+      if result == "done"
         self
       else
-        raise body["result"].to_s
+        raise result.to_s
       end
     end
 
