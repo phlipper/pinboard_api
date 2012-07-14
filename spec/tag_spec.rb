@@ -12,7 +12,7 @@ describe PinboardApi::Tag do
 
   describe "self.all" do
     before do
-      VCR.use_cassette("tags/all") do
+      PinboardApi::VCR.use_cassette("tags/all") do
         @tags = PinboardApi::Tag.all
       end
     end
@@ -27,7 +27,7 @@ describe PinboardApi::Tag do
   describe "self.find" do
     describe "found" do
       before do
-        VCR.use_cassette("tags/find/found") do
+        PinboardApi::VCR.use_cassette("tags/find/found") do
           @tags = PinboardApi::Tag.all
           @tag  = PinboardApi::Tag.find(@tags.first.name)
         end
@@ -39,7 +39,7 @@ describe PinboardApi::Tag do
 
     describe "not found" do
       before do
-        VCR.use_cassette("tags/find/not_found") do
+        PinboardApi::VCR.use_cassette("tags/find/not_found") do
           @tag = PinboardApi::Tag.find("xxBOGUSxxINVALIDxx")
         end
       end
@@ -52,7 +52,7 @@ describe PinboardApi::Tag do
   describe "#rename" do
     describe "when successful" do
       before do
-        VCR.use_cassette("tags/rename/successful") do
+        PinboardApi::VCR.use_cassette("tags/rename/successful") do
           tag = PinboardApi::Tag.all.first
           @new_name = "z_#{tag.name}"
           @new_tag  = tag.rename(@new_name)
@@ -64,7 +64,7 @@ describe PinboardApi::Tag do
 
     describe "when rename fails" do
       it "raises an exception" do
-        VCR.use_cassette("tags/rename/unsuccessful") do
+        PinboardApi::VCR.use_cassette("tags/rename/unsuccessful") do
           @tag = PinboardApi::Tag.all.first
           -> { @tag.rename("") }.must_raise(RuntimeError)
         end
@@ -76,7 +76,7 @@ describe PinboardApi::Tag do
   describe "#destroy" do
     describe "when successful" do
       it "returns self when the remote tag has been destroyed" do
-        VCR.use_cassette("tags/destroy/successful_instance") do
+        PinboardApi::VCR.use_cassette("tags/destroy/successful_instance") do
           tag = PinboardApi::Tag.find("junk")
           tag.destroy.must_equal tag
         end
@@ -87,8 +87,8 @@ describe PinboardApi::Tag do
     describe "when not successful" do
       it "raises an exception" do
         Faraday::Response.any_instance.stubs(:body).returns("")
-        VCR.use_cassette("tags/destroy/unsuccessful_instance") do
-          tag = PinboardApi::Tag.new("name" => "xxINVALIDxxBOGUSxx", "count" => 1)
+        PinboardApi::VCR.use_cassette("tags/destroy/unsuccessful_instance") do
+          tag = PinboardApi::Tag.new(name: "xxINVALIDxxBOGUSxx", "count" => 1)
           -> { tag.destroy }.must_raise(RuntimeError)
         end
       end
@@ -98,7 +98,7 @@ describe PinboardApi::Tag do
   describe "self.destroy" do
     describe "when successful" do
       it "returns self when the remote tag has been destroyed" do
-        VCR.use_cassette("tags/destroy/successful_class") do
+        PinboardApi::VCR.use_cassette("tags/destroy/successful_class") do
           tag = PinboardApi::Tag.destroy("junk")
           tag.must_be_kind_of PinboardApi::Tag
         end

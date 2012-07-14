@@ -12,3 +12,12 @@ VCR.configure do |c|
     Base64.encode64(credentials).chomp
   end
 end
+
+module PinboardApi
+  class VCR
+    def self.use_cassette(name, options = {}, &block)
+      options.merge!(preserve_exact_body_bytes: true)
+      ::VCR.use_cassette name, options, &block
+    end
+  end
+end

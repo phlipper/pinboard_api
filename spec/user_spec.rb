@@ -1,13 +1,9 @@
 require "spec_helper"
 
 describe PinboardApi::User do
-  it "is defined" do
-    defined? PinboardApi::User
-  end
-
   describe "self.secret" do
     before do
-      VCR.use_cassette("user/secret") do
+      PinboardApi::VCR.use_cassette("user/secret") do
         @secret = PinboardApi::User.secret
       end
     end

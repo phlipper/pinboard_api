@@ -65,7 +65,7 @@ describe PinboardApi::Post do
   describe "#destroy" do
     describe "when successful" do
       it "returns self" do
-        VCR.use_cassette("posts/destroy/successful_instance") do
+        PinboardApi::VCR.use_cassette("posts/destroy/successful_instance") do
           post = PinboardApi::Post.find(url: "http://duckduckgo.com/").first
           post.destroy.must_equal post
         end
@@ -75,7 +75,7 @@ describe PinboardApi::Post do
     describe "when not successful" do
       it "raises an exception" do
         Faraday::Response.any_instance.stubs(:body).returns("")
-        VCR.use_cassette("posts/destroy/unsuccessful_instance") do
+        PinboardApi::VCR.use_cassette("posts/destroy/unsuccessful_instance") do
           post = PinboardApi::Post.new
           -> { post.destroy }.must_raise(RuntimeError)
         end
@@ -90,7 +90,7 @@ describe PinboardApi::Post do
   describe "self.destroy" do
     describe "when successful" do
       it "returns self" do
-        VCR.use_cassette("posts/destroy/successful_class") do
+        PinboardApi::VCR.use_cassette("posts/destroy/successful_class") do
           post = PinboardApi::Post.destroy("http://www.bing.com/")
           post.must_be_kind_of PinboardApi::Post
         end
@@ -100,7 +100,7 @@ describe PinboardApi::Post do
     describe "when not successful" do
       it "raises an exception" do
         Faraday::Response.any_instance.stubs(:body).returns("")
-        VCR.use_cassette("posts/delete/unsuccessful_class") do
+        PinboardApi::VCR.use_cassette("posts/delete/unsuccessful_class") do
           -> { PinboardApi::Post.destroy("xxBOGUSxxINVALIDxx") }.must_raise(RuntimeError)
         end
       end
@@ -115,7 +115,7 @@ describe PinboardApi::Post do
     describe "found" do
       describe "with default values" do
         before do
-          VCR.use_cassette("posts/all/default_values", preserve_exact_body_bytes: true) do
+          PinboardApi::VCR.use_cassette("posts/all/default_values") do
             @posts = PinboardApi::Post.all
           end
         end
@@ -127,7 +127,7 @@ describe PinboardApi::Post do
 
       describe "with custom count" do
         before do
-          VCR.use_cassette("posts/all/custom_count", preserve_exact_body_bytes: true) do
+          PinboardApi::VCR.use_cassette("posts/all/custom_count") do
             @posts = PinboardApi::Post.all(results: 3)
           end
         end
@@ -139,7 +139,7 @@ describe PinboardApi::Post do
 
       describe "with custom tag" do
         before do
-          VCR.use_cassette("posts/all/custom_tag", preserve_exact_body_bytes: true) do
+          PinboardApi::VCR.use_cassette("posts/all/custom_tag") do
             @posts = PinboardApi::Post.all(tag: %w[ruby programming])
           end
           @tags = @posts.map(&:tags).flatten
@@ -155,7 +155,7 @@ describe PinboardApi::Post do
         let(:todt)   { Time.gm(2012, 06, 01) }
 
         before do
-          VCR.use_cassette("posts/all/custom_times", preserve_exact_body_bytes: true) do
+          PinboardApi::VCR.use_cassette("posts/all/custom_times") do
             @posts = PinboardApi::Post.all(fromdt: fromdt, todt: todt)
           end
           @times = @posts.map(&:time).flatten
@@ -168,7 +168,7 @@ describe PinboardApi::Post do
 
     describe "not found" do
       before do
-        VCR.use_cassette("posts/all/not_found") do
+        PinboardApi::VCR.use_cassette("posts/all/not_found") do
           @posts = PinboardApi::Post.all(tag: "xxNOTxxFOUNDxx")
         end
       end
@@ -184,7 +184,7 @@ describe PinboardApi::Post do
   describe "self.find" do
     describe "found" do
       before do
-        VCR.use_cassette("posts/find/found", preserve_exact_body_bytes: true) do
+        PinboardApi::VCR.use_cassette("posts/find/found") do
           @posts = PinboardApi::Post.find(tag: "test")
         end
       end
@@ -196,7 +196,7 @@ describe PinboardApi::Post do
 
     describe "not found" do
       before do
-        VCR.use_cassette("posts/find/not_found") do
+        PinboardApi::VCR.use_cassette("posts/find/not_found") do
           @posts = PinboardApi::Post.find(tag: "xxBOGUSxxINVALIDxx")
         end
       end
@@ -211,7 +211,7 @@ describe PinboardApi::Post do
   # #######################
   describe "self.last_update" do
     before do
-      VCR.use_cassette("posts/update") do
+      PinboardApi::VCR.use_cassette("posts/update") do
         @last_update = PinboardApi::Post.last_update
       end
     end
@@ -225,7 +225,7 @@ describe PinboardApi::Post do
   # #######################
   describe "self.suggest" do
     before do
-      VCR.use_cassette("posts/suggest") do
+      PinboardApi::VCR.use_cassette("posts/suggest") do
         @suggestions = PinboardApi::Post.suggest("http://blog.com")
       end
     end
@@ -244,7 +244,7 @@ describe PinboardApi::Post do
   describe "self.recent" do
     describe "with default values" do
       before do
-        VCR.use_cassette("posts/recent/default_values", preserve_exact_body_bytes: true) do
+        PinboardApi::VCR.use_cassette("posts/recent/default_values") do
           @posts = PinboardApi::Post.recent
         end
       end
@@ -256,7 +256,7 @@ describe PinboardApi::Post do
 
     describe "with custom count" do
       before do
-        VCR.use_cassette("posts/recent/custom_count", preserve_exact_body_bytes: true) do
+        PinboardApi::VCR.use_cassette("posts/recent/custom_count") do
           @posts = PinboardApi::Post.recent(count: 3)
         end
       end
@@ -268,7 +268,7 @@ describe PinboardApi::Post do
 
     describe "with custom tag" do
       before do
-        VCR.use_cassette("posts/recent/custom_tag", preserve_exact_body_bytes: true) do
+        PinboardApi::VCR.use_cassette("posts/recent/custom_tag") do
           @posts = PinboardApi::Post.recent(tag: %w[ruby programming])
         end
         @tags = @posts.map(&:tags).flatten
@@ -287,7 +287,7 @@ describe PinboardApi::Post do
   describe "self.dates" do
     describe "with default values" do
       before do
-        VCR.use_cassette("posts/dates/default_values", preserve_exact_body_bytes: true) do
+        PinboardApi::VCR.use_cassette("posts/dates/default_values") do
           @dates = PinboardApi::Post.dates
         end
         @date = @dates.first
@@ -303,7 +303,7 @@ describe PinboardApi::Post do
 
     describe "with custom tag" do
       before do
-        VCR.use_cassette("posts/dates/custom_tag", preserve_exact_body_bytes: true) do
+        PinboardApi::VCR.use_cassette("posts/dates/custom_tag") do
           @all_dates = PinboardApi::Post.dates
           @tag_dates = PinboardApi::Post.dates(tag: "ruby")
         end
