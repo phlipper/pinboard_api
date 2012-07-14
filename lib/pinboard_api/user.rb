@@ -3,7 +3,7 @@ module PinboardApi
 
     def self.secret
       path = "/#{PinboardApi.api_version}/user/secret"
-      PinboardApi.connection.get(path).body["result"]
+      PinboardApi.request(path).body["result"]
     end
 
   end

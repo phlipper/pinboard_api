@@ -9,7 +9,7 @@ module PinboardApi
 
     def rename(new_name)
       path = "/#{PinboardApi.api_version}/tags/rename"
-      response = PinboardApi.connection.get(path) do |req|
+      response = PinboardApi.request(path) do |req|
         req.params["old"] = @name
         req.params["new"] = new_name.to_s
       end
@@ -24,7 +24,7 @@ module PinboardApi
 
     def destroy
       path = "/#{PinboardApi.api_version}/tags/delete"
-      body = PinboardApi.connection.get(path, tag: @name).body
+      body = PinboardApi.request(path, tag: @name).body
 
       if body["result"] == "done"
         self
@@ -35,7 +35,7 @@ module PinboardApi
 
     def self.all
       path = "/#{PinboardApi.api_version}/tags/get"
-      body = PinboardApi.connection.get(path).body
+      body = PinboardApi.request(path).body
       body["tags"]["tag"].map { |tag| new(tag) }
     rescue
       raise RuntimeError, "unknown response"
