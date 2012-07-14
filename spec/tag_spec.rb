@@ -66,7 +66,7 @@ describe PinboardApi::Tag do
       it "raises an exception" do
         PinboardApi::VCR.use_cassette("tags/rename/unsuccessful") do
           @tag = PinboardApi::Tag.all.first
-          -> { @tag.rename("") }.must_raise(RuntimeError)
+          -> { @tag.rename("") }.must_raise(PinboardApi::InvalidResponseError)
         end
       end
     end
@@ -88,8 +88,8 @@ describe PinboardApi::Tag do
       it "raises an exception" do
         Faraday::Response.any_instance.stubs(:body).returns("")
         PinboardApi::VCR.use_cassette("tags/destroy/unsuccessful_instance") do
-          tag = PinboardApi::Tag.new(name: "xxINVALIDxxBOGUSxx", "count" => 1)
-          -> { tag.destroy }.must_raise(RuntimeError)
+          tag = PinboardApi::Tag.new(name: "xxINVALIDxxBOGUSxx", count: 1)
+          -> { tag.destroy }.must_raise(PinboardApi::InvalidResponseError)
         end
       end
     end
@@ -109,7 +109,9 @@ describe PinboardApi::Tag do
       it "raises an exception" do
         Faraday::Response.any_instance.stubs(:body).returns("")
         VCR.use_cassette("tags/destroy/unsuccessful_class") do
-          -> { PinboardApi::Tag.destroy("xxINVALIDxxBOGUSxx") }.must_raise(RuntimeError)
+          -> {
+            PinboardApi::Tag.destroy("xxINVALIDxxBOGUSxx")
+          }.must_raise(PinboardApi::InvalidResponseError)
         end
       end
     end

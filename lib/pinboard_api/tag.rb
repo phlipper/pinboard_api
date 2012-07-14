@@ -20,7 +20,7 @@ module PinboardApi
       if result == "done"
         Tag.new(name: new_name, count: @count)
       else
-        raise result.to_s
+        raise InvalidResponseError, result.to_s
       end
     end
 
@@ -31,7 +31,7 @@ module PinboardApi
       if result == "done"
         self
       else
-        raise result.to_s
+        raise InvalidResponseError, result.to_s
       end
     end
 
@@ -40,7 +40,7 @@ module PinboardApi
       body = PinboardApi.request(path).body
       body["tags"]["tag"].map { |tag| new(tag) }
     rescue
-      raise RuntimeError, "unknown response"
+      raise InvalidResponseError, "unknown response"
     end
 
     def self.find(name)

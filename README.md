@@ -179,7 +179,6 @@ PinboardApi::User.secret
 * Implement Post.add/create
 * Implement support for the new [`auth_token`](http://pinboard.in/api/#authentication)
 * Implement support for rate limiting
-* Cleanup/refactor internal exception handling
 
 
 ## Contributing
