@@ -112,7 +112,16 @@ PinboardApi::Post.recent(tag: "ruby")
 PinboardApi::Post.recent(count: 25, tag: ["ruby", "programming"])
 ```
 
-* ~~[posts/all](https://pinboard.in/api#posts_all) - fetch all bookmarks by date, tag, or range~~
+* [posts/all](https://pinboard.in/api#posts_all) - fetch all bookmarks by date, tag, or range
+
+```ruby
+PinboardApi::Post.all
+# => [#<PinboardApi::Post:0x007ffe150e1fd0 @description="Techniques to Secure Your Website with Ruby on Rails..."> ...]
+
+PinboardApi::Post.all(tag: %w[ruby programming], meta: true, results: 30)
+PinboardApi::Post.all(start: 50, fromdt: 2.weeks.ago, todt: 1.week.ago)
+```
+
 * [posts/suggest](https://pinboard.in/api#posts_suggest) - fetch popular and recommended tags for a url
 
 ```ruby

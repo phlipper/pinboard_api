@@ -1,31 +1,32 @@
 require "spec_helper"
 
 describe PinboardApi::Post do
-  it "is defined" do
-    defined? PinboardApi::Post
-  end
+  subject { PinboardApi::Post.new }
 
+  it { subject.must_respond_to :description }
+  it { subject.must_respond_to :extended }
+  it { subject.must_respond_to :hash }
+  it { subject.must_respond_to :url }
+  it { subject.must_respond_to :meta }
+  it { subject.must_respond_to :tags }
+  it { subject.must_respond_to :time }
+
+
+  let(:post) { PinboardApi::Post }
   let(:attributes) do
     {
       "description" => "Test Description",
-      "extended" => "Test Extended",
-      "hash" => "d58e3582afa99040e27b92b13c8f2280",
-      "url" => "www.example.com",
-      "tags" => "tag"
+      "extended"    => "Test Extended",
+      "hash"        => "d58e3582afa99040e27b92b13c8f2280",
+      "url"         => "www.example.com",
+      "tags"        => "tag"
     }
   end
 
-  let(:post) { PinboardApi::Post }
-  let(:new_post) { PinboardApi::Post.new }
 
-  it { new_post.must_respond_to :description }
-  it { new_post.must_respond_to :extended }
-  it { new_post.must_respond_to :hash }
-  it { new_post.must_respond_to :url }
-  it { new_post.must_respond_to :meta }
-  it { new_post.must_respond_to :tags }
-  it { new_post.must_respond_to :time }
-
+  # #######################
+  # initialize
+  # #######################
   describe "#initialize" do
     let(:obj) { post.new(attributes) }
 
@@ -37,21 +38,33 @@ describe PinboardApi::Post do
     it { obj.time.must_be_kind_of Time }
   end
 
+
+  # #######################
+  # time
+  # #######################
   describe "#time" do
-    it { post.new("time" => Time.now).time.must_be_kind_of Time }
-    it { post.new("time" => Date.new).time.must_be_kind_of Time }
-    it { post.new("time" => "2013-01-01").time.must_be_kind_of Time }
+    it { post.new(time: Time.now).time.must_be_kind_of Time }
+    it { post.new(time: Date.new).time.must_be_kind_of Time }
+    it { post.new(time: "2013-01-01").time.must_be_kind_of Time }
   end
 
+
+  # #######################
+  # tags
+  # #######################
   describe "#tags" do
-    it { post.new("tags" => "tag1").tags.must_equal ["tag1"] }
-    it { post.new("tags" => "tag1 tag2").tags.must_equal ["tag1", "tag2"] }
-    it { post.new("tags" => ["tag1", "tag2"]).tags.must_equal ["tag1", "tag2"] }
+    it { post.new(tags: "tag1").tags.must_equal ["tag1"] }
+    it { post.new(tags: "tag1 tag2").tags.must_equal ["tag1", "tag2"] }
+    it { post.new(tags: ["tag1", "tag2"]).tags.must_equal ["tag1", "tag2"] }
   end
 
+
+  # #######################
+  # destroy
+  # #######################
   describe "#destroy" do
     describe "when successful" do
-      it "returns self when the remote post has been deleted" do
+      it "returns self" do
         VCR.use_cassette("posts/destroy/successful_instance") do
           post = PinboardApi::Post.find(url: "http://duckduckgo.com/").first
           post.destroy.must_equal post
@@ -70,9 +83,13 @@ describe PinboardApi::Post do
     end
   end
 
+
+  # #######################
+  # self.destroy
+  # #######################
   describe "self.destroy" do
     describe "when successful" do
-      it "returns self when the remote post has been deleted" do
+      it "returns self" do
         VCR.use_cassette("posts/destroy/successful_class") do
           post = PinboardApi::Post.destroy("http://www.bing.com/")
           post.must_be_kind_of PinboardApi::Post
@@ -90,6 +107,80 @@ describe PinboardApi::Post do
     end
   end
 
+
+  # #######################
+  # self.all
+  # #######################
+  describe "self.all" do
+    describe "found" do
+      describe "with default values" do
+        before do
+          VCR.use_cassette("posts/all/default_values", preserve_exact_body_bytes: true) do
+            @posts = PinboardApi::Post.all
+          end
+        end
+
+        it { @posts.must_be_kind_of Array }
+        it { @posts.first.must_be_kind_of PinboardApi::Post }
+        it { @posts.first.url.wont_be_empty }
+      end
+
+      describe "with custom count" do
+        before do
+          VCR.use_cassette("posts/all/custom_count", preserve_exact_body_bytes: true) do
+            @posts = PinboardApi::Post.all(results: 3)
+          end
+        end
+
+        it { @posts.must_be_kind_of Array }
+        it { @posts.size.must_equal 3 }
+        it { @posts.first.url.wont_be_empty }
+      end
+
+      describe "with custom tag" do
+        before do
+          VCR.use_cassette("posts/all/custom_tag", preserve_exact_body_bytes: true) do
+            @posts = PinboardApi::Post.all(tag: %w[ruby programming])
+          end
+          @tags = @posts.map(&:tags).flatten
+        end
+
+        it { @posts.must_be_kind_of Array }
+        it { @tags.must_include "ruby" }
+        it { @tags.must_include "programming" }
+      end
+
+      describe "with custom times" do
+        let(:fromdt) { Time.new(2012, 05, 01).utc }
+        let(:todt)   { Time.new(2012, 06, 01).utc }
+
+        before do
+          VCR.use_cassette("posts/all/custom_times", preserve_exact_body_bytes: true) do
+            @posts = PinboardApi::Post.all(fromdt: fromdt, todt: todt)
+          end
+          @times = @posts.map(&:time).flatten
+        end
+
+        it { @times.min.must_be :>=, fromdt }
+        it { @times.max.must_be :<=, todt }
+      end
+    end
+
+    describe "not found" do
+      before do
+        VCR.use_cassette("posts/all/not_found") do
+          @posts = PinboardApi::Post.all(tag: "xxNOTxxFOUNDxx")
+        end
+      end
+
+      it { @posts.must_be_empty }
+    end
+  end
+
+
+  # #######################
+  # self.find
+  # #######################
   describe "self.find" do
     describe "found" do
       before do
@@ -106,7 +197,7 @@ describe PinboardApi::Post do
     describe "not found" do
       before do
         VCR.use_cassette("posts/find/not_found") do
-          @posts = PinboardApi::Post.find("tag" => "xxBOGUSxxINVALIDxx")
+          @posts = PinboardApi::Post.find(tag: "xxBOGUSxxINVALIDxx")
         end
       end
 
@@ -114,16 +205,24 @@ describe PinboardApi::Post do
     end
   end
 
-  describe "self.update" do
+
+  # #######################
+  # self.last_update
+  # #######################
+  describe "self.last_update" do
     before do
       VCR.use_cassette("posts/update") do
-        @last_update = PinboardApi::Post.update
+        @last_update = PinboardApi::Post.last_update
       end
     end
 
     it { @last_update.must_be_kind_of Time }
   end
 
+
+  # #######################
+  # self.suggest
+  # #######################
   describe "self.suggest" do
     before do
       VCR.use_cassette("posts/suggest") do
@@ -138,6 +237,10 @@ describe PinboardApi::Post do
     it { @suggestions["recommended"].wont_be_empty }
   end
 
+
+  # #######################
+  # self.recent
+  # #######################
   describe "self.recent" do
     describe "with default values" do
       before do
@@ -177,6 +280,10 @@ describe PinboardApi::Post do
     end
   end
 
+
+  # #######################
+  # self.dates
+  # #######################
   describe "self.dates" do
     describe "with default values" do
       before do
@@ -214,14 +321,95 @@ describe PinboardApi::Post do
   end
 
 
-  describe "self.tag_param_string" do
-    before do
-      @post = PinboardApi::Post
+  # #######################
+  # self.extract_posts
+  # #######################
+  describe "self.extract_posts" do
+    describe "single post" do
+      let(:payload) do
+        {
+          "user"=>"phlipper",
+          "dt"=>"2012-07-11T05:52:58Z",
+          "post"=> {
+            "href"=>"http://www.baz.qux",
+            "time"=>"2012-06-11T05:52:58Z",
+            "description"=>"Baz Qux",
+            "extended"=>"An extended Baz Qux",
+            "tag"=>"protip baz qux",
+            "hash"=>"472e1e39219178ac2ef7450c655d7f4b"
+          }
+        }
+      end
+
+      before do
+        @posts = post.extract_posts(payload)
+        @urls = @posts.map(&:url)
+      end
+
+      it { @posts.must_be_kind_of Array }
+      it { @posts.wont_be_empty }
+      it { @posts.first.must_be_kind_of PinboardApi::Post }
+
+      it { @urls.must_include "http://www.baz.qux" }
     end
 
-    it { @post.tag_param_string(nil).must_be_nil }
-    it { @post.tag_param_string("foo").must_equal "foo" }
-    it { @post.tag_param_string("foo,bar").must_equal "foo,bar" }
-    it { @post.tag_param_string(%w[foo bar]).must_equal "foo,bar" }
+    describe "multiple posts" do
+      let(:payload) do
+        {
+          "user"=>"phlipper",
+          "dt"=>"2012-07-11T05:52:58Z",
+          "post"=>[
+            {
+              "href"=>"http://www.foo.bar",
+              "time"=>"2012-07-11T05:52:58Z",
+              "description"=>"Foo Bar",
+              "extended"=>"An extended Foo Bar",
+              "tag"=>"protip foo bar",
+              "hash"=>"927b1e39219178ac2ef7450c655d7f4b"
+            },
+            {
+              "href"=>"http://www.baz.qux",
+              "time"=>"2012-06-11T05:52:58Z",
+              "description"=>"Baz Qux",
+              "extended"=>"An extended Baz Qux",
+              "tag"=>"protip baz qux",
+              "hash"=>"472e1e39219178ac2ef7450c655d7f4b"
+            }
+          ]
+        }
+      end
+
+      before do
+        @posts = post.extract_posts(payload)
+        @urls = @posts.map(&:url)
+      end
+
+      it { @posts.must_be_kind_of Array }
+      it { @posts.wont_be_empty }
+      it { @posts.first.must_be_kind_of PinboardApi::Post }
+
+      it { @urls.must_include "http://www.foo.bar" }
+      it { @urls.must_include "http://www.baz.qux" }
+    end
+  end
+
+  # #######################
+  # self.dt_param_string
+  # #######################
+  describe "self.dt_param_string" do
+    let(:time) { Time.new(2012, 01, 01, 0, 0, 0, 0) }
+
+    it { post.dt_param_string(nil).must_be_nil }
+    it { post.dt_param_string(time).must_equal "2012-01-01T00:00:00Z" }
+  end
+
+  # #######################
+  # self.tag_param_string
+  # #######################
+  describe "self.tag_param_string" do
+    it { post.tag_param_string(nil).must_be_nil }
+    it { post.tag_param_string("foo").must_equal "foo" }
+    it { post.tag_param_string("foo,bar").must_equal "foo,bar" }
+    it { post.tag_param_string(%w[foo bar]).must_equal "foo,bar" }
   end
 end

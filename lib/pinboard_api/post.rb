@@ -4,6 +4,8 @@ module PinboardApi
     attr_reader :description, :extended, :hash, :meta, :url
 
     def initialize(attributes = {})
+      attributes.stringify_keys!
+
       @description = attributes["description"]
       @extended    = attributes["extended"]
       @hash        = attributes["hash"]
@@ -23,7 +25,7 @@ module PinboardApi
 
     def destroy
       path = "/#{PinboardApi.api_version}/posts/delete"
-      body = PinboardApi.connection.get(path, url: @url).body["result"]
+      body = PinboardApi.request(path, url: @url).body["result"]
 
       if body && body.fetch("code", "") == "done"
         self
@@ -40,33 +42,42 @@ module PinboardApi
       end
     end
 
+    def self.all(options = {})
+      path = "/#{PinboardApi.api_version}/posts/all"
+
+      tag    = tag_param_string(options[:tag])
+      fromdt = dt_param_string(options[:fromdt])
+      todt   = dt_param_string(options[:todt])
+
+      response = PinboardApi.request(path) do |req|
+        req.params["tag"]     = tag if tag
+        req.params["start"]   = options[:start] if options[:start]
+        req.params["results"] = options[:results] if options[:results]
+        req.params["fromdt"]  = fromdt if fromdt
+        req.params["todt"]    = todt if todt
+        req.params["meta"]    = 1 if options[:meta]
+      end
+
+      extract_posts(response.body["posts"])
+    end
 
     def self.find(options = {})
       path = "/#{PinboardApi.api_version}/posts/get"
-      response = PinboardApi.connection.get(path) do |req|
+      response = PinboardApi.request(path) do |req|
         options.each_pair { |k,v| req.params[k.to_s] = v }
       end
-
-      posts = response.body["posts"]
-      if posts && posts.keys.include?("post")
-        posts.inject([]) do |collection, tuple|
-          key, attrs = tuple
-          Array(collection) << new(attrs) if key == "post"
-        end
-      else
-        Array.new
-      end
+      extract_posts(response.body["posts"])
     end
 
-    def self.update
+    def self.last_update
       path = "/#{PinboardApi.api_version}/posts/update"
-      body = PinboardApi.connection.get(path).body
+      body = PinboardApi.request(path).body
       Time.parse(body["update"]["time"])
     end
 
     def self.suggest(url)
       path = "/#{PinboardApi.api_version}/posts/suggest"
-      response = PinboardApi.connection.get(path, url: url)
+      response = PinboardApi.request(path, url: url)
       response.body["suggested"]
     end
 
@@ -75,34 +86,52 @@ module PinboardApi
       tag = tag_param_string(options[:tag])
       count = options[:count]
 
-      response = PinboardApi.connection.get(path) do |req|
+      response = PinboardApi.request(path) do |req|
         req.params["tag"] = tag if tag
         req.params["count"] = count if count
       end
 
-      posts = response.body["posts"]["post"]
-      posts.map { |attrs| new(attrs) }
+      extract_posts(response.body["posts"])
     end
 
     def self.dates(options = {})
       path = "/#{PinboardApi.api_version}/posts/dates"
       tag = tag_param_string(options[:tag])
 
-      response = PinboardApi.connection.get(path) do |req|
+      response = PinboardApi.request(path) do |req|
         req.params["tag"] = tag if tag
       end
 
       dates = response.body["dates"]["date"]
       dates.map do |date|
-        date["count"] = date["count"].to_i
-        date["date"]  = Date.parse(date["date"])
-        date
+        { "count" => date["count"].to_i, "date" =>  Date.parse(date["date"]) }
       end
     end
 
 
+    def self.extract_posts(payload)
+      unless payload.respond_to?(:keys) && payload.keys.include?("post")
+        return Array.new
+      end
+
+      # response.body["posts"] - "429 Too Many Requests.  Wait 60 seconds before fetching posts/all again."
+
+      payload.inject([]) do |collection, (key, attrs)|
+        if key == "post"
+          Array.wrap(attrs).each do |post|
+            Array.wrap(collection) << new(post)
+          end
+        end
+        collection
+      end
+    end
+
+    def self.dt_param_string(time)
+      time.nil? ? nil : time.utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+    end
+
     def self.tag_param_string(tags)
-      tags.nil? ? nil : Array(tags).join(",")
+      tags.nil? ? nil : Array.wrap(tags).join(",")
     end
   end
 end

@@ -13,30 +13,33 @@ module PinboardApi
 
   class << self
     attr_accessor :username, :password, :adapter, :ssl_options
+  end
 
-    def adapter
-      @adapter ||= :net_http
-    end
+  def self.adapter
+    @adapter ||= :net_http
+  end
 
-    def ssl_options
-      @ssl_options ||= {}
-    end
+  def self.ssl_options
+    @ssl_options ||= {}
+  end
 
-    def api_version
-      "v1"
-    end
+  def self.api_version
+    "v1"
+  end
 
-    def api_url
-      "https://#{username}:#{password}@api.pinboard.in"
-    end
+  def self.api_url
+    "https://#{username}:#{password}@api.pinboard.in"
+  end
 
-    def connection
-      Faraday.new(url: api_url, ssl: ssl_options) do |builder|
-        builder.response :logger if ENV["PINBOARD_LOGGER"]
-        builder.response :xml, content_type: /\bxml$/
-        builder.adapter adapter
-      end
+  def self.connection
+    Faraday.new(url: api_url, ssl: ssl_options) do |builder|
+      builder.response :logger if ENV["PINBOARD_LOGGER"]
+      builder.response :xml, content_type: /\bxml$/
+      builder.adapter adapter
     end
   end
 
+  def self.request(path, options = {}, &blk)
+    PinboardApi.connection.get(path, options, &blk)
+  end
 end
