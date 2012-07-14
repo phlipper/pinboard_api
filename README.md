@@ -174,6 +174,13 @@ PinboardApi::User.secret
 ```
 
 
+## TODO
+
+* Implement Post.add/create
+* Implement support for the new `[auth_token](http://pinboard.in/api/#authentication)`
+* Cleanup/refactor internal exception handling
+
+
 ## Contributing
 
 1. Fork it
