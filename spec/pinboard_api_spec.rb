@@ -4,18 +4,22 @@ describe PinboardApi do
   before do
     @username = PinboardApi.username
     @password = PinboardApi.password
+    @auth_token = PinboardApi.auth_token
 
     PinboardApi.username = nil
     PinboardApi.password = nil
+    PinboardApi.auth_token = nil
   end
 
   after do
     PinboardApi.username = @username
     PinboardApi.password = @password
+    PinboardApi.auth_token = @auth_token
   end
 
   it { PinboardApi.must_respond_to :username }
   it { PinboardApi.must_respond_to :password }
+  it { PinboardApi.must_respond_to :auth_token }
 
   it { PinboardApi.must_respond_to :api_version }
   it { PinboardApi.api_version.must_equal "v1" }
@@ -27,7 +31,7 @@ describe PinboardApi do
   it { PinboardApi.ssl_options.must_be_kind_of Hash }
 
   it { PinboardApi.must_respond_to :api_url }
-  it { PinboardApi.api_url.must_equal "https://:@api.pinboard.in" }
+  it { PinboardApi.api_url.must_equal "https://api.pinboard.in" }
 
   it { PinboardApi.must_respond_to :connection }
   it { PinboardApi.connection.must_be_kind_of Faraday::Connection }
@@ -36,23 +40,22 @@ describe PinboardApi do
     before do
       @username = PinboardApi.username
       @password = PinboardApi.password
+      @auth_token = PinboardApi.auth_token
 
       PinboardApi.username = "username"
       PinboardApi.password = "password"
+      PinboardApi.auth_token = "auth_token"
     end
 
     after do
       PinboardApi.username = @username
       PinboardApi.password = @password
+      PinboardApi.auth_token = @auth_token
     end
 
     it { PinboardApi.username.must_equal "username" }
     it { PinboardApi.password.must_equal "password" }
-
-    it "adds credentials to the api_url" do
-      url = "https://username:password@api.pinboard.in"
-      PinboardApi.api_url.must_equal url
-    end
+    it { PinboardApi.auth_token.must_equal "auth_token" }
   end
 
   describe "ssl_options" do

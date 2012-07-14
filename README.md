@@ -41,11 +41,17 @@ $ gem install pinboard_api
 
 ## Getting Started
 
-You will need to set your username and password for the Pinboard service.
+You will need to set your username and password for the Pinboard service:
 
 ```ruby
 PinboardApi.username = "phlipper"
 PinboardApi.password = "[REDACTED]"
+```
+
+Alternately, you may use the new [`auth_token`](http://pinboard.in/api/#authentication) method:
+
+```ruby
+PinboardApi.auth_token = "[REDACTED]"
 ```
 
 You may also set the SSL options which will be passed through to [Faraday](https://github.com/technoweenie/faraday#readme):
@@ -192,7 +198,6 @@ PinboardApi::User.secret
 
 ## TODO
 
-* Implement support for the new [`auth_token`](http://pinboard.in/api/#authentication)
 * Implement support for rate limiting
 
 

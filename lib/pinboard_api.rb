@@ -16,7 +16,7 @@ require "pinboard_api/version"
 module PinboardApi
 
   class << self
-    attr_accessor :username, :password, :adapter, :ssl_options
+    attr_accessor :username, :password, :auth_token, :adapter, :ssl_options
   end
 
   def self.adapter
@@ -32,18 +32,20 @@ module PinboardApi
   end
 
   def self.api_url
-    "https://#{username}:#{password}@api.pinboard.in"
+    "https://api.pinboard.in"
   end
 
   def self.connection
     Faraday.new(url: api_url, ssl: ssl_options) do |builder|
       builder.response :logger if ENV["PINBOARD_LOGGER"]
       builder.response :xml, content_type: /\bxml$/
+      builder.basic_auth username, password if auth_token.blank?
       builder.adapter adapter
     end
   end
 
   def self.request(path, options = {}, &blk)
+    options.merge!(auth_token: auth_token) unless auth_token.blank?
     PinboardApi.connection.get(path, options, &blk)
   end
 end
