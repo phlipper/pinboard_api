@@ -72,7 +72,7 @@ The `PinboardApi` namespace implements the 3 primary object types: `Post`, `Tag`
 * [posts/update](https://pinboard.in/api#update) - Check to see when a user last posted an item.
 
 ```ruby
-PinboardApi::Post.update
+PinboardApi::Post.last_update
 # => 2012-07-07 04:18:28 UTC
 ```
 
