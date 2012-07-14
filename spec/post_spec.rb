@@ -105,7 +105,7 @@ describe PinboardApi::Post do
     describe "success" do
       let(:url) { "https://github.com/phlipper/pinboard_api" }
       let(:description) { "PinboardAPI on Github" }
-      let(:extended) { "Extended Guthub Awesomeness" }
+      let(:extended) { "Extended Github Awesomeness" }
       let(:tags) { %w[pinboard github] }
 
       before do
