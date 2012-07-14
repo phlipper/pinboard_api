@@ -4,7 +4,7 @@ begin
   SimpleCov.command_name "MiniTest"
   SimpleCov.start
 rescue LoadError
-  puts "unable to load 'simplecov'"
+  warn "unable to load 'simplecov'"
 end
 
 require "minitest/autorun"
