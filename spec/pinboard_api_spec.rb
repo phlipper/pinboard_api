@@ -1,10 +1,6 @@
 require "spec_helper"
 
 describe PinboardApi do
-  it "is defined" do
-    defined? PinboardApi
-  end
-
   before do
     @username = PinboardApi.username
     @password = PinboardApi.password

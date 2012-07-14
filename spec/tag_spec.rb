@@ -1,10 +1,6 @@
 require "spec_helper"
 
 describe PinboardApi::Tag do
-  it "is defined" do
-    defined? PinboardApi::Tag
-  end
-
   let(:tag) { PinboardApi::Tag.new({"name" => "tag", "count" => 1}) }
 
   it { tag.must_respond_to :name }
