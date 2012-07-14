@@ -4,6 +4,7 @@ require "faraday_middleware"
 require "core_ext/array"
 require "core_ext/hash"
 
+require "pinboard_api/exceptions"
 require "pinboard_api/post"
 require "pinboard_api/tag"
 require "pinboard_api/user"
